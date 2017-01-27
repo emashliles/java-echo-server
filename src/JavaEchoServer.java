@@ -1,15 +1,18 @@
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.Scanner;
 
 public class JavaEchoServer {
 
-    public static void main(String args[]){
-        System.out.print("Please enter text to be echoed:");
-        echoInput();
+    public static void main(String args[]) {
+        echoInput(new PrintStream(System.out), System.in);
     }
 
-    private static void echoInput() {
-        Scanner sc = new Scanner(System.in);
+    public static void echoInput(PrintStream stdOut, InputStream stdIn) {
+        stdOut.print("Please enter text to be echoed:");
+        Scanner sc = new Scanner(stdIn);
         String echoText = sc.nextLine();
-        System.out.print(echoText);
+        stdOut.print(" " + echoText);
     }
 }

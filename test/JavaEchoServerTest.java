@@ -1,5 +1,3 @@
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -10,41 +8,14 @@ import static org.junit.Assert.assertEquals;
 
 public class JavaEchoServerTest {
 
-    private ByteArrayOutputStream stdOut;
-    private ByteArrayInputStream stdIn;
-
-    @Before
-    public void setUp() throws Exception {
-        stdOut = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(stdOut));
-
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        System.setOut(null);
-        System.setIn(null);
-    }
-
     @Test
-    public void asksForInput() {
-        String[] args = {};
-        stdIn = new ByteArrayInputStream("\n".getBytes());
-        System.setIn(stdIn);
+    public void canEchoInput() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PrintStream outPrint = new PrintStream(out);
 
-        JavaEchoServer.main(args);
-        assertEquals("Please enter text to be echoed:", stdOut.toString());
-    }
+        ByteArrayInputStream in = new ByteArrayInputStream("Echo".getBytes());
 
-    @Test
-    public void echoInputOnce() {
-        String[] args = {};
-        stdIn = new ByteArrayInputStream("Echo\n".getBytes());
-        System.setIn(stdIn);
-
-        JavaEchoServer.main(args);
-        assertEquals("Please enter text to be echoed:Echo", stdOut.toString());
-
-
+        JavaEchoServer.echoInput(new PrintStream(outPrint), in);
+        assertEquals("Please enter text to be echoed: Echo", out.toString());
     }
 }
