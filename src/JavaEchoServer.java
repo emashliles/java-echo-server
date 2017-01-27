@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class JavaEchoServer {
 
-    public static void main(String args[]){
+    public static void main(String args[]) throws Exception{
         System.out.print("Please enter text to be echoed:");
         echoInput();
     }

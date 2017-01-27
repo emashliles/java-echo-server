@@ -1,50 +1,42 @@
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.io.*;
 
 import static org.junit.Assert.assertEquals;
 
 public class JavaEchoServerTest {
 
-    private ByteArrayOutputStream stdOut;
-    private ByteArrayInputStream stdIn;
-
-    @Before
-    public void setUp() throws Exception {
-        stdOut = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(stdOut));
-
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        System.setOut(null);
-        System.setIn(null);
-    }
-
     @Test
-    public void asksForInput() {
-        String[] args = {};
-        stdIn = new ByteArrayInputStream("\n".getBytes());
-        System.setIn(stdIn);
+    public void endToEnd() throws IOException {
+        Process server = Runtime.getRuntime().exec("java -cp out JavaEchoServer");
 
-        JavaEchoServer.main(args);
-        assertEquals("Please enter text to be echoed:", stdOut.toString());
-    }
+        BufferedInputStream serverOutput = new BufferedInputStream(server.getInputStream());
+        BufferedInputStream errorOutput = new BufferedInputStream(server.getErrorStream());
+        BufferedOutputStream stdIn = new BufferedOutputStream(server.getOutputStream());
 
-    @Test
-    public void echoInputOnce() {
-        String[] args = {};
-        stdIn = new ByteArrayInputStream("Echo\n".getBytes());
-        System.setIn(stdIn);
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stdIn));
 
-        JavaEchoServer.main(args);
-        assertEquals("Please enter text to be echoed:Echo", stdOut.toString());
+        writer.write("Hello");
+        writer.flush();
+        writer.close();
 
+        int outRead = 0;
+        int errorRead = 0;
+        byte[] error = new byte[1024];
+        byte[] out = new byte[1024];
 
+        while ((errorRead = errorOutput.read(error)) != -1 ){
+
+            String content = new String(error, 0, errorRead);
+            assertEquals("?",content );
+
+        }
+
+        while ((outRead = serverOutput.read(out)) != -1 ){
+
+            String content = new String(out, 0, outRead);
+            assertEquals("Please enter text to be echoed:Hello",content );
+
+        }
     }
 }
